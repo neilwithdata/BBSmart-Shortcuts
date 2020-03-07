@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<project name="bbsmart-gogo" default="build" basedir=".">
+
+	<property file="build.properties"/>
+
+	<fail unless="jde.home" message="Please ensure that you have a valid build.properties file available" />
+
+	<property name="lib.dir" value="${basedir}/lib" />
+	<property name="src.dir" value="${basedir}/src" />
+	<property name="res.dir" value="${basedir}/res" />
+
+	<property name="dest.dir" value="${basedir}/deployed" />
+	<property name="ota.dest.dir" value="${dest.dir}/ota" />
+	<property name="dm.dest.dir" value="${dest.dir}/dm" />
+
+	<property name="simulator.dir" value="C:\Program Files\Research In Motion\BlackBerry JDE 4.6.0\simulator" />
+
+	<typedef resource="bb-ant-defs.xml" classpath="${lib.dir}/bb-ant-tools.jar" />
+
+	<target name="clean">
+		<delete dir="${dest.dir}" />
+		<mkdir dir="${dest.dir}" />
+	</target>
+
+	<target name="build" description="Build with bb-ant-tools">
+		<rapc output="Shortcuts" destdir="${dest.dir}" quiet="true">
+			<jdp type="cldc" file="gui.properties">
+				<!-- <entry file="gui.properties" /> -->
+			</jdp>
+			<src>
+				<fileset dir="${src.dir}">
+					<include name="**/*.java" />
+				</fileset>
+				<fileset dir="${res.dir}">
+					<include name="**/*.png" />
+					<exclude name="**/Thumbs.db" />
+				</fileset>
+			</src>
+		</rapc>
+	</target>
+
+	<target name="sign" depends="build" description="RIM COD Signing">
+		<sigtool jdehome="${jde430.home}" codfile="${dest.dir}/Shortcuts.cod" />
+	</target>
+
+	<target name="production-organize" depends="sign" description="Organizes the output suitable for production deployment">
+		<!-- Setup the DM directory -->
+		<mkdir dir="${dm.dest.dir}" />
+		<copy file="Shortcuts.alx" todir="${dm.dest.dir}" />
+		<copy file="${dest.dir}/Shortcuts.cod" todir="${dm.dest.dir}" />
+
+		<mkdir dir="${ota.dest.dir}" />
+		<copy file="${dest.dir}/Shortcuts.jad" todir="${ota.dest.dir}" />
+		<copy file="${dest.dir}/Shortcuts.cod" tofile="${ota.dest.dir}/Shortcuts_temp.cod" />
+		<unzip src="${ota.dest.dir}/Shortcuts_temp.cod" dest="${ota.dest.dir}" />
+		<delete file="${ota.dest.dir}/Shortcuts_temp.cod" />
+		
+		<!-- Hack to write in the MIDlet-Description because bb-ant-tools doesn't want to do it -->
+		<echo append="true" file="${ota.dest.dir}/Shortcuts.jad" message="MIDlet-Description: The ultimate BlackBerry convenience tool!" />
+	</target>
+
+	<target name="production-build" depends="production-organize" description="Production build of BBSmart Shortcuts" />
+
+	<target name="deploy-to-simulator" depends="build" description="Copy debug files to simulator folder">
+		<copy todir="${simulator.dir}/">
+			<fileset dir="${dest.dir}">
+				<include name="*.cod"/>
+				<!-- <include name="*.cso"/> -->
+				<include name="*.debug"/>
+			</fileset>
+		</copy>
+	</target>
+
+</project>

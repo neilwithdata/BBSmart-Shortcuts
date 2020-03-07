@@ -1,0 +1,13 @@
+1.5
+=========================
+Big UI Overhaul
+Can now move and edit macros
+New task/calendar/memo toolbar options
+Support for more toolbar native and third-party applications
+
+1.4
+=========================
+Now able to paste URL from clipboard.
+Shortcut manager no longer selects the first shortcut if focus is currently on the title
+Large addressbooks are now better supported (incl bug fix)
+Escape will now dismiss the auto-complete dropdown

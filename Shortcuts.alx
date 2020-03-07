@@ -1,0 +1,27 @@
+<loader version="1.0">
+	<application id="BBSmartShortcuts">
+		<name >
+			Shortcuts
+		</name>
+		<description >
+			The ultimate BlackBerry convenience tool!
+		</description>
+		<version >
+			1.5
+		</version>
+		<vendor >
+			BBSmart
+		</vendor>
+		<copyright >
+			Copyright (c) 2008 BBSmart
+		</copyright>
+		<fileset Java="1.25">
+			<directory >
+				
+			</directory>
+			<files >
+				Shortcuts.cod
+			</files>
+		</fileset>
+	</application>
+</loader>
